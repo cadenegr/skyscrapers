@@ -48,8 +48,8 @@ This implementation stands out with several **innovative algorithmic approaches*
 
 ### Build
 ```bash
-git clone https://github.com/cadenegr/skyscrappers.git
-cd skyscrappers/skyscrapers
+git clone https://github.com/cadenegr/skyscrapers.git
+cd skyscrapers/skyscrapers
 make
 ```
 
