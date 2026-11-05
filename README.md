@@ -13,7 +13,7 @@ make          # builds ./skyscrapers and ./nonogram
 make test     # runs the known puzzles
 ```
 
-Requires a C99 compiler and `make`. No other dependencies.
+Requires a C99 compiler and `make`. No other dependencies. To show it to someone step by step, follow [DEMO.md](DEMO.md).
 
 ## Skyscrapers
 
