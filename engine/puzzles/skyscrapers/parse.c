@@ -1,7 +1,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "engine.h"
+#include "skyscrapers.h"
 
 /*
  * Reads the clues: 4 * N numbers separated by spaces, in the same order as
@@ -14,7 +14,7 @@
  * Here we just read numbers until the string ends, then work out N from how
  * many we found.
  */
-bool	parse_clues(const char *input, t_puzzle *p)
+bool	parse_clues(const char *input, t_sky *p)
 {
 	int		values[4 * MAX_N];
 	int		count = 0;
@@ -66,9 +66,9 @@ bool	parse_clues(const char *input, t_puzzle *p)
  * "...... .....4 ..." and one long string work.
  *
  * A given number simply limits its cell to that one height. Must be called
- * after apply_clue_limits(), which starts every cell from "all heights".
+ * after engine_init(), which starts every cell from "all heights".
  */
-bool	apply_givens(const char *grid, t_puzzle *p)
+bool	apply_givens(const char *grid, const t_sky *p, t_engine *e)
 {
 	int	cell = 0;
 
@@ -86,7 +86,7 @@ bool	apply_givens(const char *grid, t_puzzle *p)
 			if (h < 1 || h > p->n)
 				return (fprintf(stderr, "Error: '%c' in the grid is not a height 1..%d.\n",
 						*grid, p->n), false);
-			p->allowed[cell / p->n][cell % p->n] &= BIT(h);
+			e->domain[cell] &= BIT(h);
 		}
 		cell++;
 	}

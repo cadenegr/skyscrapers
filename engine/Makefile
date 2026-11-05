@@ -1,30 +1,43 @@
-NAME    = engine
+# The engine core is built once as a library (libengine.a);
+# each puzzle plug-in is its own program linked against it.
 
-SRC_DIR = src
-OBJ_DIR = obj
-SRC     = $(wildcard $(SRC_DIR)/*.c)
-OBJ     = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+CC       = cc
+CFLAGS   = -Wall -Wextra -Werror -std=c99 -O2 -Icore/include
+OBJ_DIR  = obj
 
-CC      = cc
-CFLAGS  = -Wall -Wextra -Werror -std=c99 -O2 -Iinclude
+CORE     = libengine.a
+CORE_SRC = $(wildcard core/src/*.c)
+CORE_OBJ = $(CORE_SRC:%.c=$(OBJ_DIR)/%.o)
 
-all: $(NAME)
+SKY      = skyscrapers
+SKY_SRC  = $(wildcard puzzles/skyscrapers/*.c)
+SKY_OBJ  = $(SKY_SRC:%.c=$(OBJ_DIR)/%.o)
 
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^
+all: $(SKY)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c include/engine.h | $(OBJ_DIR)
+test: $(SKY)
+	./tests/run_tests.sh ./$(SKY)
+
+$(CORE): $(CORE_OBJ)
+	ar rcs $@ $^
+
+$(SKY): $(SKY_OBJ) $(CORE)
+	$(CC) $(CFLAGS) -o $@ $(SKY_OBJ) $(CORE)
+
+$(OBJ_DIR)/core/%.o: core/%.c core/include/engine.h
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR):
-	mkdir -p $@
+$(OBJ_DIR)/puzzles/skyscrapers/%.o: puzzles/skyscrapers/%.c puzzles/skyscrapers/skyscrapers.h core/include/engine.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -rf $(OBJ_DIR)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(CORE) $(SKY)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all test clean fclean re

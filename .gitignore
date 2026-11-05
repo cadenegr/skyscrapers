@@ -19,5 +19,5 @@ skyscrapers/tests/benchmark_results/
 *.swp
 .DS_Store
 
-# New engine binary
-engine/engine
+# Engine programs
+engine/skyscrapers

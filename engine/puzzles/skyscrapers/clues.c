@@ -1,4 +1,4 @@
-#include "engine.h"
+#include "skyscrapers.h"
 
 /*
  * Your idea: before building any line, use ALL four clues to limit what each
@@ -19,9 +19,10 @@
  * Example on 9x9 with top clue 7: the top cell is at most 3, the next at
  * most 4, then 5, and so on.
  */
-static void	limit_cell(t_puzzle *p, int r, int c, int clue, int d)
+static void	limit_cell(const t_sky *p, t_engine *e, int r, int c, int clue, int d)
 {
-	uint16_t	keep = 0;
+	t_set		*cell = &e->domain[r * p->n + c];
+	t_set		keep = 0;
 	int			max_h;
 
 	if (clue == 0)
@@ -29,32 +30,29 @@ static void	limit_cell(t_puzzle *p, int r, int c, int clue, int d)
 	if (clue == 1)
 	{
 		if (d == 0)
-			p->allowed[r][c] &= BIT(p->n);
+			*cell &= BIT(p->n);
 		else
-			p->allowed[r][c] &= (uint16_t)~BIT(p->n);
+			*cell &= ~BIT(p->n);
 		return ;
 	}
 	max_h = p->n - clue + 1 + d;
 	for (int h = 1; h <= p->n && h <= max_h; h++)
 		keep |= BIT(h);
-	p->allowed[r][c] &= keep;
+	*cell &= keep;
 }
 
-void	apply_clue_limits(t_puzzle *p)
+void	apply_clue_limits(const t_sky *p, t_engine *e)
 {
 	int	n = p->n;
 
-	for (int r = 0; r < n; r++)
-		for (int c = 0; c < n; c++)
-			p->allowed[r][c] = (uint16_t)(BIT(n + 1) - 2); /* bits 1..n */
 	for (int i = 0; i < n; i++)
 	{
 		for (int d = 0; d < n; d++)
 		{
-			limit_cell(p, d, i, p->top[i], d);				/* column i, from the top */
-			limit_cell(p, n - 1 - d, i, p->bottom[i], d);	/* column i, from the bottom */
-			limit_cell(p, i, d, p->left[i], d);				/* row i, from the left */
-			limit_cell(p, i, n - 1 - d, p->right[i], d);	/* row i, from the right */
+			limit_cell(p, e, d, i, p->top[i], d);				/* column i, from the top */
+			limit_cell(p, e, n - 1 - d, i, p->bottom[i], d);	/* column i, from the bottom */
+			limit_cell(p, e, i, d, p->left[i], d);				/* row i, from the left */
+			limit_cell(p, e, i, n - 1 - d, p->right[i], d);	/* row i, from the right */
 		}
 	}
 }
