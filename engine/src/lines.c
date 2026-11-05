@@ -73,14 +73,17 @@ typedef struct s_gen
  *        clues, see clues.c);
  *      - we must not already see more buildings than the front clue says.
  *
+ * A clue of 0 means blank: that side is simply not checked.
+ *
  * `seen` and `tallest` track what is visible from the front so far.
  */
 static bool	generate(t_gen *g, uint8_t *heights, int start, int seen, int tallest)
 {
 	if (start == g->n)
 	{
-		if (seen == g->clue_front
-			&& visible_count(heights, g->n, true) == g->clue_back)
+		if ((g->clue_front == 0 || seen == g->clue_front)
+			&& (g->clue_back == 0
+				|| visible_count(heights, g->n, true) == g->clue_back))
 			return (add_candidate(g->line, heights, g->n));
 		return (true);
 	}
@@ -90,7 +93,8 @@ static bool	generate(t_gen *g, uint8_t *heights, int start, int seen, int talles
 		int		h = heights[i];
 		int		now_seen = seen + (h > tallest);
 
-		if (!HAS(g->cell[start], h) || now_seen > g->clue_front)
+		if (!HAS(g->cell[start], h)
+			|| (g->clue_front != 0 && now_seen > g->clue_front))
 			continue ;
 		heights[start] = heights[i];
 		heights[i] = tmp;

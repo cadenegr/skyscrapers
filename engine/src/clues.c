@@ -24,6 +24,8 @@ static void	limit_cell(t_puzzle *p, int r, int c, int clue, int d)
 	uint16_t	keep = 0;
 	int			max_h;
 
+	if (clue == 0)
+		return ;	/* blank clue: tells us nothing */
 	if (clue == 1)
 	{
 		if (d == 0)

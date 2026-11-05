@@ -51,6 +51,7 @@ typedef struct s_puzzle
 
 /* parse.c */
 bool	parse_clues(const char *input, t_puzzle *p);
+bool	apply_givens(const char *grid, t_puzzle *p);
 
 /* What a round of propagation can end with. */
 typedef enum e_result

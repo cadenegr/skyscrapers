@@ -2,23 +2,29 @@
 #include <stdlib.h>
 #include "engine.h"
 
+/* A clue as printed: its digit, or '.' when blank. */
+static char	clue_char(int clue)
+{
+	return (clue == 0 ? '.' : (char)('0' + clue));
+}
+
 /* Prints a solved grid with the clues around it, like your print_result. */
 static void	print_grid(const t_puzzle *p, uint8_t grid[MAX_N][MAX_N])
 {
 	printf("\n     ");
 	for (int c = 0; c < p->n; c++)
-		printf(" %d", p->top[c]);
+		printf(" %c", clue_char(p->top[c]));
 	printf("\n");
 	for (int r = 0; r < p->n; r++)
 	{
-		printf("  %d |", p->left[r]);
+		printf("  %c |", clue_char(p->left[r]));
 		for (int c = 0; c < p->n; c++)
 			printf("%d|", grid[r][c]);
-		printf(" %d\n", p->right[r]);
+		printf(" %c\n", clue_char(p->right[r]));
 	}
 	printf("     ");
 	for (int c = 0; c < p->n; c++)
-		printf(" %d", p->bottom[c]);
+		printf(" %c", clue_char(p->bottom[c]));
 	printf("\n\n");
 }
 
@@ -34,14 +40,18 @@ int	main(int argc, char **argv)
 	t_result	result;
 	bool		ok;
 
-	if (argc != 2)
+	if (argc != 2 && argc != 3)
 	{
-		fprintf(stderr, "Usage: %s \"top... bottom... left... right...\"\n", argv[0]);
+		fprintf(stderr, "Usage: %s \"top... bottom... left... right...\" [\"grid\"]\n"
+			"  clues: '.' or 0 for blank\n"
+			"  grid (optional): the cells row by row, '.' for empty\n", argv[0]);
 		return (EXIT_FAILURE);
 	}
 	if (!parse_clues(argv[1], &p))
 		return (EXIT_FAILURE);
 	apply_clue_limits(&p);
+	if (argc == 3 && !apply_givens(argv[2], &p))
+		return (EXIT_FAILURE);
 	ok = build_lines(&p);
 	if (ok)
 	{
