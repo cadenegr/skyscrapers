@@ -13,16 +13,24 @@ SKY      = skyscrapers
 SKY_SRC  = $(wildcard puzzles/skyscrapers/*.c)
 SKY_OBJ  = $(SKY_SRC:%.c=$(OBJ_DIR)/%.o)
 
-all: $(SKY)
+NONO     = nonogram
+NONO_SRC = $(wildcard puzzles/nonogram/*.c)
+NONO_OBJ = $(NONO_SRC:%.c=$(OBJ_DIR)/%.o)
 
-test: $(SKY)
+all: $(SKY) $(NONO)
+
+test: $(SKY) $(NONO)
 	./tests/run_tests.sh ./$(SKY)
+	./tests/run_nonogram_tests.sh ./$(NONO)
 
 $(CORE): $(CORE_OBJ)
 	ar rcs $@ $^
 
 $(SKY): $(SKY_OBJ) $(CORE)
 	$(CC) $(CFLAGS) -o $@ $(SKY_OBJ) $(CORE)
+
+$(NONO): $(NONO_OBJ) $(CORE)
+	$(CC) $(CFLAGS) -o $@ $(NONO_OBJ) $(CORE)
 
 $(OBJ_DIR)/core/%.o: core/%.c core/include/engine.h
 	@mkdir -p $(dir $@)
@@ -32,11 +40,15 @@ $(OBJ_DIR)/puzzles/skyscrapers/%.o: puzzles/skyscrapers/%.c puzzles/skyscrapers/
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(OBJ_DIR)/puzzles/nonogram/%.o: puzzles/nonogram/%.c core/include/engine.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
 	rm -rf $(OBJ_DIR)
 
 fclean: clean
-	rm -f $(CORE) $(SKY)
+	rm -f $(CORE) $(SKY) $(NONO)
 
 re: fclean all
 
