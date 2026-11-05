@@ -1,0 +1,20 @@
+# Object files and build directories
+*.o
+obj/
+
+# Static libraries
+*.a
+
+# Compiled binary
+skyscrapers/skyscrapers
+
+# Generated test output
+skyscrapers/tests/results/
+skyscrapers/tests/memory_results/
+skyscrapers/tests/benchmark_results/
+
+# Editor / OS files
+.vscode/
+.idea/
+*.swp
+.DS_Store
